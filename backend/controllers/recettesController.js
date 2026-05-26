@@ -1,6 +1,5 @@
 const Recette = require('../models/Recette');
 
-// GET /recettes — toutes les recettes
 exports.getAll = async (req, res) => {
   const recettes = await Recette.find().populate('auteur', 'nom');
   res.json(recettes);
