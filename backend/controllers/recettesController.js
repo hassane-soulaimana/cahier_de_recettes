@@ -45,7 +45,12 @@ exports.getOne = async (req, res) => {
 // CREATE
 exports.create = async (req, res) => {
   try {
-    const recette = new Recette(req.body);
+    const donnees = { ...req.body };
+
+    if (req.file) {
+      donnees.image = `/uploads/${req.file.filename}`;
+    }
+    const recette = new Recette(donnees);
     await recette.save();
     res.status(201).json(recette);
   } catch (err) {
@@ -55,11 +60,16 @@ exports.create = async (req, res) => {
 
 // UPDATE
 exports.update = async (req, res) => {
-  try {
+ try {
+    const donnees = { ...req.body };
+
+    if (req.file) {
+      donnees.image = `/uploads/${req.file.filename}`;
+    }
     const recette = await Recette.findByIdAndUpdate(
       req.params.id,
-      req.body,
-      { new: true, runValidators: true }
+      donnees,
+      { new: true }
     );
     if (!recette) return res.status(404).json({ message: 'Recette non trouvée' });
     res.json(recette);

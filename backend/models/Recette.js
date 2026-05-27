@@ -7,6 +7,7 @@ const SchemaRecettes = new mongoose.Schema({
   etapes: [String],
   tempsPreparation: Number,
   categorie: String,     
+  images : {type:String, default:null},
   auteur: { type: mongoose.Schema.Types.ObjectId, ref: 'Utilisateur' },
 }, { timestamps: true });
 
