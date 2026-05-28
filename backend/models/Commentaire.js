@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-const commentaireShema =new mongoose.Schema({
-    contenu: { type: string , required: true},
+const commentaireSchema =new mongoose.Schema({
+    contenu: { type: String , required: true},
     auteur : {type: mongoose.Schema.Types.ObjectId, ref: 'Utilisateur', required: true},
     recette:    { type: mongoose.Schema.Types.ObjectId, ref: 'Recette', required: true },
 }, { timestamps: true });
