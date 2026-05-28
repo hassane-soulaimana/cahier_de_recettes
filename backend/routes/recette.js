@@ -1,7 +1,7 @@
 const express = require('express');
 const router  = express.Router();
-const ctlr   = require('../controllers/recettesController');
-const ctrlCom = require('../controllers/commentairesController');
+const ctrlr   = require('../controllers/recettesController');
+const ctrlCom = require('../controllers/commentaireController');
 const { validerRecette, validerCommentaire } = require('../middleware/validation');
 
 // Recettes
