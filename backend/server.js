@@ -3,6 +3,8 @@ const path = require('path');
 const dotenv = require('dotenv');
 const connexionDB = require ('./config/db.js');
 const port = 3000;
+const swaggerUi     = require('swagger-ui-express');
+const swaggerSpec   = require('./config/swagger');
 
 dotenv.config();
 connexionDB();
