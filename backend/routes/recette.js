@@ -1,14 +1,18 @@
 const express = require('express');
+const multer = require('multer');
 const router  = express.Router();
 const ctrlr   = require('../controllers/recettesController');
 const ctrlCom = require('../controllers/commentaireController');
 const { validerRecette, validerCommentaire } = require('../middleware/validation');
 
+// Configuration multer
+const upload = multer({ dest: 'uploads/' });
+
 // Recettes
 router.get('/',    ctrlr.getAll);
 router.get('/:id', ctrlr.getOne);
-router.post('/',   validerRecette, ctrlr.create);
-router.put('/:id', validerRecette, ctrlr.update);
+router.post('/',   upload.single('image'), ctrlr.create);
+router.put('/:id', upload.single('image'), ctrlr.update);
 router.delete('/:id', ctrlr.remove);
 
 // Commentaires
