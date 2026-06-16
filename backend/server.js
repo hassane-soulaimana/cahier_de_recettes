@@ -1,16 +1,22 @@
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
 const dotenv = require('dotenv');
 const connexionDB = require ('./config/db.js');
-const port = 3000;
-const swaggerUi     = require('swagger-ui-express');
-const swaggerSpec   = require('./config/swagger');
+const port = 6000;
 
 dotenv.config();
 connexionDB();
 
 const app = express();
-app.use(express.json()); // parse le json
+
+// Configuration CORS
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
+
+app.use(express.json());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
