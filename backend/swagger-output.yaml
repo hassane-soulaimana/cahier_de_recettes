@@ -1,0 +1,412 @@
+openapi: 3.0.0
+info:
+  title: Cahier de Recettes API
+  version: 1.0.0
+  description: API REST pour gérer un cahier de recettes collaboratif.
+servers:
+  - url: http://localhost:6000
+tags:
+  - name: Recettes
+    description: Gestion des recettes
+  - name: Utilisateurs
+    description: Gestion des utilisateurs
+  - name: Commentaires
+    description: Commentaires sur les recettes
+paths:
+  /recettes/:
+    get:
+      tags:
+        - Recettes
+      summary: Récupérer toutes les recettes
+      description: Retourne la liste complète des recettes avec filtres optionnels.
+      parameters:
+        - name: ingredient
+          in: query
+          schema:
+            type: string
+            example: tomate
+        - name: auteur
+          in: query
+          schema:
+            type: string
+            example: 6960ca45d0e5a2431b0b4630
+        - name: tri
+          in: query
+          schema:
+            type: string
+            example: date
+      responses:
+        '200':
+          description: Liste des recettes
+        '500':
+          description: Erreur serveur
+    post:
+      tags:
+        - Recettes
+      summary: Ajouter une recette
+      description: Crée une nouvelle recette. Nécessite authentification.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - titre
+                - ingredients
+                - etapes
+              properties:
+                titre:
+                  type: string
+                  example: Couscous de Mamie
+                ingredients:
+                  type: array
+                  items:
+                    type: string
+                  example:
+                    - semoule
+                    - agneau
+                    - légumes
+                etapes:
+                  type: array
+                  items:
+                    type: string
+                  example:
+                    - Cuire la semoule
+                    - Préparer la viande
+      responses:
+        '201':
+          description: Recette créée
+        '401':
+          description: Non authentifié
+        '500':
+          description: Erreur serveur
+  /recettes/{id}:
+    get:
+      tags:
+        - Recettes
+      summary: Récupérer une recette par ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 6960ca45d0e5a2431b0b4630
+      responses:
+        '200':
+          description: Recette trouvée
+        '404':
+          description: Recette non trouvée
+        '500':
+          description: Erreur serveur
+    put:
+      tags:
+        - Recettes
+      summary: Modifier une recette
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 6960ca45d0e5a2431b0b4630
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                titre:
+                  type: string
+                  example: Couscous revisité
+                ingredients:
+                  type: array
+                  items:
+                    type: string
+                  example:
+                    - semoule
+                    - poulet
+                etapes:
+                  type: array
+                  items:
+                    type: string
+                  example:
+                    - Cuire la semoule
+                    - Griller le poulet
+      responses:
+        '200':
+          description: Recette modifiée
+        '401':
+          description: Non authentifié
+        '404':
+          description: Recette non trouvée
+        '500':
+          description: Erreur serveur
+    delete:
+      tags:
+        - Recettes
+      summary: Supprimer une recette
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 6960ca45d0e5a2431b0b4630
+      responses:
+        '200':
+          description: Recette supprimée
+        '401':
+          description: Non authentifié
+        '404':
+          description: Recette non trouvée
+        '500':
+          description: Erreur serveur
+  /recettes/{id}/commentaires:
+    get:
+      tags:
+        - Commentaires
+      summary: Récupérer les commentaires d'une recette
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 6960ca45d0e5a2431b0b4630
+      responses:
+        '200':
+          description: Liste des commentaires
+        '500':
+          description: Erreur serveur
+    post:
+      tags:
+        - Commentaires
+      summary: Ajouter un commentaire
+      description: Ajoute un commentaire à une recette. Nécessite authentification.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 6960ca45d0e5a2431b0b4630
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - contenu
+              properties:
+                contenu:
+                  type: string
+                  example: Délicieux ! Toute la famille a adoré.
+                auteur:
+                  type: string
+                  example: 6960ca45d0e5a2431b0b4630
+      responses:
+        '201':
+          description: Commentaire ajouté
+        '400':
+          description: Données invalides
+        '401':
+          description: Non authentifié
+        '404':
+          description: Recette non trouvée
+        '500':
+          description: Erreur serveur
+  /recettes/{id}/commentaires/{commentaireId}:
+    delete:
+      tags:
+        - Commentaires
+      summary: Supprimer un commentaire
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 6960ca45d0e5a2431b0b4630
+        - name: commentaireId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 7861db56e1f6b3542c1c5741
+      responses:
+        '200':
+          description: Commentaire supprimé
+        '401':
+          description: Non authentifié
+        '500':
+          description: Erreur serveur
+  /utilisateurs/login:
+    post:
+      tags:
+        - Utilisateurs
+      summary: Connexion utilisateur
+      description: Authentifie un utilisateur et retourne un token JWT.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - motDePasse
+              properties:
+                email:
+                  type: string
+                  example: hassane@email.com
+                motDePasse:
+                  type: string
+                  example: monMotDePasse
+      responses:
+        '200':
+          description: Connexion réussie, token JWT retourné
+        '401':
+          description: Mot de passe incorrect
+        '404':
+          description: Utilisateur non trouvé
+        '500':
+          description: Erreur serveur
+  /utilisateurs/:
+    post:
+      tags:
+        - Utilisateurs
+      summary: Créer un compte utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nom
+                - email
+                - motDePasse
+              properties:
+                nom:
+                  type: string
+                  example: Hassane
+                email:
+                  type: string
+                  example: hassane@email.com
+                motDePasse:
+                  type: string
+                  example: monMotDePasse
+      responses:
+        '201':
+          description: Utilisateur créé
+        '400':
+          description: Données invalides
+        '500':
+          description: Erreur serveur
+    get:
+      tags:
+        - Utilisateurs
+      summary: Récupérer tous les utilisateurs
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des utilisateurs
+        '401':
+          description: Non authentifié
+        '500':
+          description: Erreur serveur
+  /utilisateurs/{id}:
+    get:
+      tags:
+        - Utilisateurs
+      summary: Récupérer un utilisateur par ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 6960ca45d0e5a2431b0b4630
+      responses:
+        '200':
+          description: Utilisateur trouvé
+        '401':
+          description: Non authentifié
+        '404':
+          description: Utilisateur non trouvé
+        '500':
+          description: Erreur serveur
+    put:
+      tags:
+        - Utilisateurs
+      summary: Modifier un utilisateur
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 6960ca45d0e5a2431b0b4630
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nom:
+                  type: string
+                  example: Hassane Updated
+                email:
+                  type: string
+                  example: nouveau@email.com
+      responses:
+        '200':
+          description: Utilisateur modifié
+        '401':
+          description: Non authentifié
+        '500':
+          description: Erreur serveur
+    delete:
+      tags:
+        - Utilisateurs
+      summary: Supprimer un utilisateur
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 6960ca45d0e5a2431b0b4630
+      responses:
+        '200':
+          description: Utilisateur supprimé
+        '401':
+          description: Non authentifié
+        '500':
+          description: Erreur serveur
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
